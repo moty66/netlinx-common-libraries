@@ -597,6 +597,46 @@ define_function char[STRING_RETURN_SIZE_LIMIT] string_suffix_to_length(
 }
 
 /**
+ * Returns a string truncated to a specific length. If the string is less than
+ * the length specified the original string is returned. If it is truncated an
+ * elipsis will be appended.
+ *
+ * @param	a		the string to truncate
+ * @param	len		the requested length of the string
+ * @return			a string truncated to a maximum len characters
+ */
+define_function char[STRING_RETURN_SIZE_LIMIT] string_truncate(char a[],
+		integer len)
+{
+	return string_truncate_ex(a, "$85", len)
+}
+
+/**
+ * Returns a string truncated to a specific length. If the string is less than
+ * the length specified the original string is return. If it is truncated to
+ * contents of value is appended to the truncated string.
+ *
+ * @param	a		the string to truncate
+ * @param	value	the value to suffix on the string if truncated
+ * @param	len		the requested length of the string
+ * @return			a string truncated to a maximum len characters
+ */
+define_function char[STRING_RETURN_SIZE_LIMIT] string_truncate_ex(char a[],
+		char value[], integer len)
+{
+	if (len > STRING_RETURN_SIZE_LIMIT ||
+			length_string(a) > STRING_RETURN_SIZE_LIMIT) {
+		return string_size_error()
+	}
+
+	if (length_string(a) > len) {
+		return "left_string(a, len - length_string(value)), value"
+	} else {
+		return a
+	}
+}
+
+/**
  * Returns the left substring of a string up to the specified number of
  * characters.
  * WARNING: this is a destructive removal - the returned substring will be
@@ -738,6 +778,30 @@ define_function char[STRING_RETURN_SIZE_LIMIT] string_reverse(char a[])
 	set_length_string(ret, len);
 
 	return ret
+}
+
+/**
+ * Check is a string starts with another string.
+ *
+ * @param	a			the string to check
+ * @param	search		the substring to search for
+ * @return				a boolean, true if 'a' begins with 'search'
+ */
+define_function char string_starts_with(char a[], char search[])
+{
+	return left_string(a, length_string(search)) == search;
+}
+
+/**
+ * Check is a string end with another string.
+ *
+ * @param	a			the string to check
+ * @param	search		the substring to search for
+ * @return				a boolean, true if 'a' ends with 'search'
+ */
+define_function char string_ends_with(char a[], char search[])
+{
+	return right_string(a, length_string(search)) == search;
 }
 
 #end_if
